@@ -84,8 +84,3 @@
     )
 
   )
-
-  (do
-    (web/stop)
-    (-main)
-    )
