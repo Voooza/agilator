@@ -1,8 +1,10 @@
 @echo off
 
-pushd agilator
+pushd apps
+pushd retro
 call npm run build
-robocopy build ../agilator-be/resources/public /S /is /it
+robocopy dist ../../agilator-be/resources/public/retro /S /is /it
+popd
 popd
 
 pushd agilator-be

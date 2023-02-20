@@ -34,7 +34,7 @@ if (browser){
 
     new_uri += "//" + loc.hostname + ":" + port;
 
-    socket = new WebSocket(new_uri);
+    socket = new WebSocket("ws://agilator.cz:8585");
 
     socket.addEventListener('open', function (event) {
         console.log("It's open");
