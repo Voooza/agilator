@@ -10,7 +10,7 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
     } else {
         // production build
         return {
-            base: "poker",
+            base: "/poker",
             plugins: [svelte()],
         }
     }

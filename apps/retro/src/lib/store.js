@@ -5,7 +5,11 @@ const initialValue = window.localStorage.getItem("nick");
 export const nick = writable (initialValue);
 
 nick.subscribe(value => {
-    if (value !== null) window.localStorage.setItem("nick", value);
+    if (value == null || value === "null") {
+        window.localStorage.setItem("nick", "");
+    } else {
+        window.localStorage.setItem("nick", value);
+    }
 });
 
 export const messageStore = writable ("");

@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
     } else {
         // production build
         return {
-            base: "retro",
+            base: "/retro",
             plugins: [svelte()],
         }
     }

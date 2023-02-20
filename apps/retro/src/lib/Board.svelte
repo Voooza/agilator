@@ -24,7 +24,7 @@
  
  function go (){
      if (tmpNick.length >= 3) {
-         nick.set (tmpNick);
+         nick.set(tmpNick);
          announce ();
      }
  }
