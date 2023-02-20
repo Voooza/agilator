@@ -114,5 +114,8 @@
 
  .inp {
      width: 95%;
+     border-radius: 15px 7px;
+     font-size: 1.4em;
+     padding: 1em;
  }
  </style>
