@@ -61,20 +61,31 @@
   )
 
 (defn handle-html
-  [r]
-  (let [app (->> r :params :app)
-        mime "text/html"]
-    {:status 200
-     :headers {"Content-Type" mime}
-     :body (slurp (io/resource (str "public/" app "/index.html")))}))
+  [app]
+  {:status 200
+   :headers {"Content-Type"  "text/html"}
+   :body (slurp (io/resource (str "public/" (if (nil? app) "" (str app "/")) "index.html")))})
+
+(defn debug
+  [& args]
+  (pp/pprint args))
+
+(defn debug-app
+  [& args]
+  (pp/pprint args))
+
 
 (defroutes routes
-  (GET "/:app/" request (fn [r] (handle-html r)))
+  
   (GET "/:app/*.js" request (fn [r] (handle-resource r "js")))
   (GET "/:app/*.css" request (fn [r] (handle-resource r "css")))
-  (GET "/:app/*" request (fn [r] (handle-html r)))
+  (GET "/:app/*.svg" request (fn [r] (handle-resource r "svg")))
+  (GET "/:app/" [app] (fn [r] (handle-html app)))
+  (GET "/:app/*" [app] (fn [r] (handle-html app)))
+  (GET "/" request (fn [r] (handle-html nil))) 
+
   
-  (route/resources "/")
+  ;;(route/resources "/")
   
   )
 
@@ -89,10 +100,8 @@
     (web/run
       (-> routes
           (web-middleware/wrap-session {:timeout 20})
-          ;; wrap the handler with websocket support
-          ;; websocket requests will go to the callbacks, ring requests to the handler
           (web-middleware/wrap-websocket websocket-callbacks))
-      {"host" "127.0.0.1", "port" port})))
+      {"host" "0.0.0.0", "port" port})))
 
 
 (comment

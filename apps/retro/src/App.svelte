@@ -1,7 +1,8 @@
 <script>
  import { onMount } from 'svelte';
- import Board from './lib/Board.svelte'
-
+ import Board from './lib/Board.svelte';
+ import Header from './Header.svelte';
+ 
  let sessionId = "";
  
  function parseSessionId (url){
@@ -21,6 +22,7 @@
  parseSessionId (window.location.href);
  
 </script>
+<Header></Header>
 
 {#if sessionId.length > 0}
     <Board session={sessionId}></Board>
@@ -39,8 +41,11 @@
      padding: 10px;
  }
  .btn {
-     width: 30%;
+     width: 100%;
+     height: 3em;
+     font-size: 1.4em;
      margin: auto;
+     border-radius: 15px 7px;
  }
  .inp {
      width: 67%;

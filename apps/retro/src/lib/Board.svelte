@@ -108,7 +108,6 @@
      display: block;
      margin: 10em auto;
      width: 50%;
-     border: 1px dotted green;
      border-radius: 15px 7px;
      padding: 10px;
  }

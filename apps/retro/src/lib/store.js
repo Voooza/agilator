@@ -16,8 +16,11 @@ var loc = window.location, wsuri, port;
 
 wsuri = loc.protocol === "https:" ? "wss://" : "ws://";
 wsuri += loc.hostname;
+wsuri += loc.port === "5173" ? ":8080" : "";
+console.log (loc);
+console.log (wsuri);
 
-socket = new WebSocket(wsuri);
+socket = new WebSocket("wss://agilator.cz/");
 
 socket.addEventListener('open', function (event) {
     console.log("It's open");
