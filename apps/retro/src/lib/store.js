@@ -5,7 +5,7 @@ const initialValue = window.localStorage.getItem("nick");
 export const nick = writable (initialValue);
 
 nick.subscribe(value => {
-    window.localStorage.setItem("nick", value);
+    if (value !== null) window.localStorage.setItem("nick", value);
 });
 
 export const messageStore = writable ("");
@@ -17,10 +17,8 @@ var loc = window.location, wsuri, port;
 wsuri = loc.protocol === "https:" ? "wss://" : "ws://";
 wsuri += loc.hostname;
 wsuri += loc.port === "5173" ? ":8080" : "";
-console.log (loc);
-console.log (wsuri);
 
-socket = new WebSocket("wss://agilator.cz/");
+socket = new WebSocket(wsuri);
 
 socket.addEventListener('open', function (event) {
     console.log("It's open");

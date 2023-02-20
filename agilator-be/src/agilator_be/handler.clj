@@ -101,7 +101,7 @@
       (-> routes
           (web-middleware/wrap-session {:timeout 20})
           (web-middleware/wrap-websocket websocket-callbacks))
-      {"host" "0.0.0.0", "port" port})))
+      {"host" "127.0.0.1", "port" port})))
 
 
 (comment
