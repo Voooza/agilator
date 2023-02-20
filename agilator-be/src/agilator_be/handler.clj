@@ -69,11 +69,6 @@
      :body (slurp (io/resource (str "public/" app "/index.html")))}))
 
 (defroutes routes
-  
-  ;; (GET "/" request (root request))
-  ;; (GET "/retro" request (retro request))
-  ;;  (GET "/retro/*" request (retro request))
-  
   (GET "/:app/" request (fn [r] (handle-html r)))
   (GET "/:app/*.js" request (fn [r] (handle-resource r "js")))
   (GET "/:app/*.css" request (fn [r] (handle-resource r "css")))
@@ -97,7 +92,7 @@
           ;; wrap the handler with websocket support
           ;; websocket requests will go to the callbacks, ring requests to the handler
           (web-middleware/wrap-websocket websocket-callbacks))
-      {"host" "0.0.0.0", "port" port})))
+      {"host" "127.0.0.1", "port" port})))
 
 
 (comment

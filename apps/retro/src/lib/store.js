@@ -12,28 +12,24 @@ export const messageStore = writable ("");
 
 let socket;
 
-var loc = window.location, new_uri, port;
-if (loc.protocol === "https:") {
-        new_uri = "wss:";
-    } else {
-        new_uri = "ws:";
-    }
+var loc = window.location, wsuri, port;
 
-new_uri += "//" + loc.hostname;
+wsuri = loc.protocol === "https:" ? "wss://" : "ws://";
+wsuri += loc.hostname;
 
-socket = new WebSocket(new_uri);
+socket = new WebSocket(wsuri);
 
 socket.addEventListener('open', function (event) {
-        console.log("It's open");
-    });
+    console.log("It's open");
+});
 
 socket.addEventListener('message', function (event) {
-        console.log (event.data);
-        let data = JSON.parse(event.data);
-        if (!data.infra){
-            messageStore.set(data);
-        }
-    });
+    console.log (event.data);
+    let data = JSON.parse(event.data);
+    if (!data.infra){
+        messageStore.set(data);
+    }
+});
 
 
 
