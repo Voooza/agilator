@@ -3,7 +3,8 @@
              [clojure.data.json        :as json]
              [clojure.string           :as s]
              [clojure.pprint           :as pp]
-             [agilator-be.utils        :refer (uuid)]))
+             [agilator-be.utils        :refer (uuid keywordize)])
+  (:use [hiccup.core]))
 
 (defonce sessions (atom {}))
 (defonce channels (atom {}))
@@ -17,6 +18,7 @@
   (reset! channels {})
 
   )
+
 
 
 (defn handle-message
@@ -44,3 +46,39 @@
     (swap! sessions update-in [session :users] dissoc ch)
     (if (= 0 (count (get-in @sessions [session :users])))
       (swap! sessions dissoc session))))
+
+(defn handle-command
+  [sessionId command]
+  (let [session (get @sessions sessionId)
+        users (->> session :users vals)
+        remarks (:remarks  session)]
+    (html
+     [:div
+      [:h1 "You had a great retrospective!"]
+      [:h2 "Hope you enjoyed it as much as I did...."]
+      [:p "Your sessionId: " sessionId]
+      [:p (str "exported on " (new java.util.Date))]
+      [:h2 "Who participated?"]
+      [:ul
+       (for [u users]
+         [:li u])]
+      [:h2 "What went well?"]
+      (for [r (filter (fn [r] (= "www" (:cat r))) (map keywordize remarks))]
+        [:p (str (:owner r) ": " (:content r))])
+      [:h2 "What went badly?"]
+      (for [r (filter (fn [r] (= "wth" (:cat r))) (map keywordize remarks))]
+        [:p (str (:owner r) ": " (:content r))])
+      [:h2 "What shall we try to improve things??"]
+      (for [r (filter (fn [r] (= "wws" (:cat r))) (map keywordize remarks))]
+        [:p (str (:owner r) ": " (:content r))])
+      [:h2 "What confused us?"]
+      (for [r (filter (fn [r] (= "wtf" (:cat r))) (map keywordize remarks))]
+        [:p (str (:owner r) ": " (:content r))])
+      ]
+
+     )
+
+    )
+  )
+
+

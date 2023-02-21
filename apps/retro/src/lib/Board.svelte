@@ -76,6 +76,8 @@
         <Column bind:this={wwsCol} category="wws" placeholder="What we shall?"  color="#1F618D" bg_color="#D4E6F1" on:message={handleMessage}></Column>
         <Column bind:this={wtfCol} category="wtf" placeholder="WTF?"            color="#CA6F1E" bg_color="#FAE5D3" on:message={handleMessage}></Column>
     </div>
+    <a class="export_link" href="{window.location.href + '/export'}" target="_blank">export</a>
+    
 
     
 {:else}
@@ -118,4 +120,8 @@
      font-size: 1.4em;
      padding: 1em;
  }
- </style>
+ .export_link {
+     text-decoration: none;
+     margin: 3em;
+ }
+</style>

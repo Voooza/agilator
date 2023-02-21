@@ -66,23 +66,24 @@
    :headers {"Content-Type"  "text/html"}
    :body (slurp (io/resource (str "public/" (if (nil? app) "" (str app "/")) "index.html")))})
 
-(defn debug
-  [& args]
-  (pp/pprint args))
-
-(defn debug-app
-  [& args]
-  (pp/pprint args))
+(defn handle-command
+  [app session command]
+  (cond
+    (= app "retro") (retro/handle-command session command))
+  )
 
 
 (defroutes routes
-  
+
   (GET "/:app/*.js" request (fn [r] (handle-resource r "js")))
   (GET "/:app/*.css" request (fn [r] (handle-resource r "css")))
   (GET "/:app/*.svg" request (fn [r] (handle-resource r "svg")))
+;;  (GET "/:app/:session/export" [app session] (fn [r] (export app session)))  
   (GET "/:app/" [app] (fn [r] (handle-html app)))
-  (GET "/:app/*" [app] (fn [r] (handle-html app)))
-  (GET "/" request (fn [r] (handle-html nil))) 
+  (GET "/:app/:session/:command" [app session command] (fn [r] (handle-command app session command)))
+  (GET "/:app/:session" [app session] (fn [r] (handle-html app)))
+
+  (GET "/" request (fn [r] (handle-html nil)))
 
   
   ;;(route/resources "/")

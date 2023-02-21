@@ -20,7 +20,7 @@ var loc = window.location, wsuri, port;
 
 wsuri = loc.protocol === "https:" ? "wss://" : "ws://";
 wsuri += loc.hostname;
-wsuri += loc.port === "5173" ? ":8080" : "";
+wsuri += loc.port === "5173" || loc.port === "8080" ? ":8080" : "";
 
 socket = new WebSocket(wsuri);
 
