@@ -7,7 +7,8 @@
                  [org.immutant/web "2.1.10"]
                  [ring/ring-core "1.9.6"]
                  [org.clojure/data.json "0.2.7"]
-                 [ring/ring-devel "1.9.6"]]
+                 [ring/ring-devel "1.9.6"]
+                 [clj-htmltopdf "0.2.1"]]
   :plugins [[lein-ring "0.12.5"]]
   :main agilator-be.handler
   :uberjar-name "agilator.jar"

@@ -29,10 +29,6 @@
      }
  }
  
- function resetNick () {
-     nick.set (""); 
- }
-
  function handleMessage (event){
      sendMessage (JSON.stringify ({
          app: "retro",
@@ -62,14 +58,15 @@
  
  function handleUserClick (msg) {
      if (msg.detail.name === $nick){
-         resetNick ();
+         nick.set ("");
      }
  }
- 
+
+ if ($nick.length > 2) announce ();
 </script>
 
-{#if $nick !== ""}
-    <Users on:message={announce} on:mouseenter={handleUserMouseEnter} on:mouseleave={handleUserMouseLeave} on:click={handleUserClick}></Users>
+{#if $nick.length > 2} 
+    <Users on:mouseenter={handleUserMouseEnter} on:mouseleave={handleUserMouseLeave} on:click={handleUserClick}></Users>
     <div class='board'>
         <Column bind:this={wwwCol} category="www" placeholder="What went well?" color="#2ECC71" bg_color="#D5F5E3" on:message={handleMessage}></Column>
         <Column bind:this={wthCol} category="wth" placeholder="What the hell?"  color="#922B21" bg_color="#F2D7D5" on:message={handleMessage}></Column>

@@ -25,8 +25,6 @@
      }
  });
  
- onMount(() => dispatch ('message', {}));
-
 </script>
 
 <div class="usr-wrp">

@@ -1,16 +1,8 @@
 import { writable } from "svelte/store";
 
-const initialValue = window.localStorage.getItem("nick");
-
+const initialValue = window.localStorage.getItem("nick") || "";
 export const nick = writable (initialValue);
-
-nick.subscribe(value => {
-    if (value == null || value === "null") {
-        window.localStorage.setItem("nick", "");
-    } else {
-        window.localStorage.setItem("nick", value);
-    }
-});
+nick.subscribe(value => window.localStorage.setItem("nick", value));
 
 export const messageStore = writable ("");
 

@@ -4,13 +4,14 @@
              [clojure.string           :as s]
              [clojure.pprint           :as pp]
              [agilator-be.utils        :refer (uuid keywordize)])
-  (:use [hiccup.core]))
+  (:use [hiccup.core]
+        [clj-htmltopdf.core]))
 
 (defonce sessions (atom {}))
 (defonce channels (atom {}))
 
 (comment
- 
+  
   (pp/pprint @sessions)
   (pp/pprint @channels)
   
@@ -49,35 +50,39 @@
 
 (defn handle-command
   [sessionId command]
-  (let [session (get @sessions sessionId)
-        users (->> session :users vals)
-        remarks (:remarks  session)]
-    (html
-     [:div
-      [:h1 "You had a great retrospective!"]
-      [:h2 "Hope you enjoyed it as much as I did...."]
-      [:p "Your sessionId: " sessionId]
-      [:p (str "exported on " (new java.util.Date))]
-      [:h2 "Who participated?"]
-      [:ul
-       (for [u users]
-         [:li u])]
-      [:h2 "What went well?"]
-      (for [r (filter (fn [r] (= "www" (:cat r))) (map keywordize remarks))]
-        [:p (str (:owner r) ": " (:content r))])
-      [:h2 "What went badly?"]
-      (for [r (filter (fn [r] (= "wth" (:cat r))) (map keywordize remarks))]
-        [:p (str (:owner r) ": " (:content r))])
-      [:h2 "What shall we try to improve things??"]
-      (for [r (filter (fn [r] (= "wws" (:cat r))) (map keywordize remarks))]
-        [:p (str (:owner r) ": " (:content r))])
-      [:h2 "What confused us?"]
-      (for [r (filter (fn [r] (= "wtf" (:cat r))) (map keywordize remarks))]
-        [:p (str (:owner r) ": " (:content r))])
-      ]
-
-     )
-
+  (if-let [session (get @sessions sessionId)]
+    (let [users (->> session :users vals)
+          remarks (:remarks  session)]
+      {:status 200
+       :headers {"Content-Type" "application/pdf"}
+       :body (ring.util.io/piped-input-stream
+              (fn [out]
+                (->pdf
+                 (html
+                  [:div
+                   [:h1 "You had a great retrospective!"]
+                   [:h2 "Hope you enjoyed it as much as I did...."]
+                   [:p "Your sessionId: " sessionId]
+                   [:p (str "exported on " (new java.util.Date))]
+                   [:h2 "Who participated?"]
+                   [:ul
+                    (for [u users]
+                      [:li u])]
+                   [:h2 {:style "color: #2ECC71"} "What went well?" ]
+                   (for [r (filter (fn [r] (= "www" (:cat r))) (map keywordize remarks))]
+                     [:p (str (:owner r) ": " (:content r))])
+                   [:h2 {:style "color: #922B21"} "What went badly?"]
+                   (for [r (filter (fn [r] (= "wth" (:cat r))) (map keywordize remarks))]
+                     [:p (str (:owner r) ": " (:content r))])
+                   [:h2 {:style "color: #1F618D"} "What shall we try to improve things?"]
+                   (for [r (filter (fn [r] (= "wws" (:cat r))) (map keywordize remarks))]
+                     [:p (str (:owner r) ": " (:content r))])
+                   [:h2 {:style "color: #CA6F1E"} "What confused us?"]
+                   (for [r (filter (fn [r] (= "wtf" (:cat r))) (map keywordize remarks))]
+                     [:p (str (:owner r) ": " (:content r))])
+                   ])
+                 out)))})
+    (str "error")
     )
   )
 
