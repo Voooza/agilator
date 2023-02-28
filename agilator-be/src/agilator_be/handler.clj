@@ -5,6 +5,7 @@
              [compojure.route          :as route]
              [compojure.core           :refer (ANY GET defroutes)]
              [ring.util.response       :refer (response redirect)]
+             [ring.middleware.params   :refer (wrap-params)]
              [clojure.data.json        :as json]
              [clojure.string           :as s]
              [clojure.pprint           :as pp]
@@ -46,47 +47,36 @@
    :on-close   handle-close 
    :on-message handle-message})
 
-(defn handle-resource
-  [r filext]
-  (let [app (->> r :params :app)
-        file (-> r :params :* (str "." filext))
-        mime (cond
-               (= "js" filext)   "application/javascript"
-               (= "css" filext)  "text/css"
-               (= "html" filext) "text/html"
-               :else             (str "image/" filext))]
-    {:status 200
-     :headers {"Content-Type" mime}
-     :body (slurp (io/resource (str "public/" app "/" file)))})
-  )
-
-(defn handle-html
-  [app]
-  {:status 200
-   :headers {"Content-Type"  "text/html"}
-   :body (slurp (io/resource (str "public/" (if (nil? app) "" (str app "/")) "index.html")))})
-
 (defn handle-command
   [app session command]
+  (println app "/" session "/" command)
   (cond
     (= app "retro") (retro/handle-command session command))
   )
 
 
 (defroutes routes
-
-  (GET "/:app/*.js" request (fn [r] (handle-resource r "js")))
-  (GET "/:app/*.css" request (fn [r] (handle-resource r "css")))
-  (GET "/:app/*.svg" request (fn [r] (handle-resource r "svg")))
-;;  (GET "/:app/:session/export" [app session] (fn [r] (export app session)))  
-  (GET "/:app/" [app] (fn [r] (handle-html app)))
-  (GET "/:app/:session/:command" [app session command] (fn [r] (handle-command app session command)))
-  (GET "/:app/:session" [app session] (fn [r] (handle-html app)))
-
-  (GET "/" request (fn [r] (handle-html nil)))
-
+  (GET "/:app/" [app] (redirect (str "/" app "/index.html")))
+  (GET "/" request (redirect "/index.html"))
+  (wrap-params (GET "/:app/:command{[a-z]+}" [app command] (fn [r] (handle-command app (-> r :params (get "session")) command))))
+  (route/resources "/")
   
-  ;;(route/resources "/")
+  )
+
+(comment
+
+  (routes {:uri "/retro/"
+           :request-method :get})
+  (routes {:uri "/retro/index.html"
+           :request-method :get})
+  (routes {:uri "/retro/export"
+           :query-string "session=abcde"
+           :request-method :get})
+  (routes {:uri "/retro/export"
+           :query-string "session=aec7c624-979c-4140-be3c-50bab739f7b3"
+           :request-method :get})
+  (routes {:uri "/retro/export"
+           :request-method :get})
   
   )
 

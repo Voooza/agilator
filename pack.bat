@@ -19,6 +19,8 @@ popd
 
 popd
 
+robocopy . agilator-be/resources/public/ gator_blue.png
+
 pushd agilator-be
 call lein uberjar
 popd

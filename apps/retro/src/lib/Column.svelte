@@ -25,9 +25,54 @@
  
  messageStore.subscribe (value => {
      if (value) {
-         remarks = value.remarks.filter (r => r.cat === category);
+         let newRemarks = [];
+         for (var k of Object.keys (value.remarks)) {
+             let val = value.remarks [k];
+             if (val.cat === category) {
+                 newRemarks.push ({"uuid": k,
+                                  "cat": val.cat,
+                                  "owner": val.owner,
+                                  "content": val.content,
+                                  "reactions": val.reactions
+                                  })
+             }
+         }
+         remarks = newRemarks;
      }
  });
+
+ function addSpin (e){
+     e.target.classList.add("la-spin");
+ }
+ function removeSpin (e){
+     e.target.classList.remove("la-spin");
+ }
+
+ function react (uuid,kind){
+     dispatch ('reaction', {uuid: uuid, kind: kind});
+ }
+
+ function rectifyReactions (reactions){
+     let byKind = {};
+     for (const r of Object.values (reactions)){
+         let p = byKind [r.kind] + 1 || 1;
+         byKind [r.kind] = p;
+     }
+     let rectified = [];
+     for (const kind of Object.keys (byKind)){
+         rectified.push ({kind: kind, count: byKind [kind]});
+     }
+     console.log (rectified);
+     return rectified;
+ }
+
+ let reaction2icon = {
+     "thumbs-up": "la-thumbs-up",
+     "thumbs-down": "la-thumbs-down",
+     "angry": "la-angry",
+     "sad": "la-sad-tear",
+     "grin": "la-grin-squint",
+ }
 
 </script>
 
@@ -42,7 +87,24 @@
                           color: {color}; 
                           border: 1px solid {color};
                           opacity: {highlightUsr.length > 0 && highlightUsr !== remark.owner ? 0.2 :  1};">
-                {remark.content}
+                <span class="reactors">
+                    <i class="las la-xs la-thumbs-up"   on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, "thumbs-up")}></i>
+                    <i class="las la-xs la-thumbs-down" on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, "thumbs-down")}></i>
+                    <i class="las la-xs la-angry"       on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, "angry")}></i>
+                    <i class="las la-xs la-sad-tear"    on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, "sad")}></i>
+                    <i class="las la-xs la-grin-squint" on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, "grin")}></i>
+                </span>
+                {remark.content} <br/>
+                {#if Object.keys (remark.reactions).length > 0}
+                    <span class="reactions">
+                        {#each rectifyReactions (remark.reactions) as reaction}
+                            {#if reaction.count > 1}
+                                <span class="reaction-count">{reaction.count}x</span>
+                            {/if}
+                            <i class="las la-xs {reaction2icon[reaction.kind]}" on:mouseenter={addSpin} on:mouseleave={removeSpin} on:click={() => react (remark.uuid, reaction.kind)}></i>
+                        {/each}
+                    </span>
+                {/if}
                 <!-- <button on:click="{() => remove(remark)}">remove</button> -->
             </label>
         {/each}
@@ -98,4 +160,49 @@
      opacity: 1;
  }
 
+ span.reactors {
+     opacity: 0;
+     transition: opacity 0.2s;
+     cursor: pointer;
+     float: right;
+     position: absolute;
+     top: -0.5em;
+     right: 0.2em;
+     background-color: inherit;
+     border: inherit;
+     border-radius:inherit;
+     padding: 0em 0.5em;
+ }
+ 
+ label:hover span.reactors {
+     opacity:1;
+ }
+
+ 
+ span.reactions {
+     opacity: 0.2;
+     transition: opacity 0.2s;
+     cursor: pointer;
+     float: right;
+     position: relative;
+     top: -0.4em;
+     right: 0.2em;
+     background-color: inherit;
+     border: inherit;
+     border-radius:inherit;
+     padding: 0em 0.5em;
+ }
+ 
+ label:hover span.reactions {
+     opacity:1;
+ }
+
+ span.reaction-count {
+     font-size: 0.5em;
+     position: relative;
+     top: -0.2em;
+     left: 0.5em;
+ }
+ 
 </style>
+

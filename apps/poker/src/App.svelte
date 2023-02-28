@@ -6,6 +6,20 @@
 
 <p>Not yet implemented.</p>
 
+<i class="las la-thumbs-up"></i>
+<i class="lar la-thumbs-up"></i>
+
+<i class="las la-thumbs-down"></i>
+<i class="lar la-thumbs-down"></i>
+
+<i class="las la-angry"></i>
+<i class="lar la-angry"></i>
+
+<i class="las la-sad-tear"></i>
+<i class="lar la-sad-tear"></i>
+
+<i class="las la-grin-squint"></i>
+<i class="lar la-grin-squint"></i>
 <style>
 .form {
        display: block;
@@ -24,7 +38,10 @@
 .inp {
       width: 67%;
       }
- 
+i {
+   font-size: 3em;
+   color: #268bd2;
+   }
 </style>
 
 

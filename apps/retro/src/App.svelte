@@ -3,28 +3,18 @@
  import Board from './lib/Board.svelte';
  import Header from './Header.svelte';
  
- let sessionId = "";
+ let sessionId = new URLSearchParams (window.location.search).get ("session");
  
- function parseSessionId (url){
-     let comps = url.split ("/");
-     let lastComp = comps [comps.length - 1];
-     if (lastComp !== '' && lastComp !== 'retro'){
-         sessionId = lastComp;
-     }
- }
-
  function generate () {
      sessionId = self.crypto.randomUUID();
-     let sessionUrl = window.location.href + sessionId;
+     let sessionUrl = window.location.href + "?session=" + sessionId;
      window.location.href = sessionUrl;
  }
  
- parseSessionId (window.location.href);
- 
-</script>
+ </script>
 <Header></Header>
 
-{#if sessionId.length > 0}
+{#if sessionId != null}
     <Board session={sessionId}></Board>
 {:else}
     <div class="form">

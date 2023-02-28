@@ -1,16 +1,10 @@
-<script>
- function handleLinkClick (event){
-     console.log (event);
-     window.location.href = event.target.href;
- }
-</script>
-                                 
 <nav class="anav">
-<a href="/" rel="external">home</a>
-|
-<a href="/retro/">retro</a>
-|
-<a href="/poker/" on:click={handleLinkClick}>poker</a>
+    
+    <a href="/" rel="external"><img class="navimg"  alt="gator" src="/gator_blue.png"/></a>
+    |
+    <a href="/retro/">retro</a>
+    |
+    <a href="/poker/">poker</a>
 </nav>
 
 <style>
@@ -28,5 +22,8 @@
      /* font-size: 1.4em; */
 
      
+ }
+ .navimg {
+     width: 3em;
  }
 </style>
