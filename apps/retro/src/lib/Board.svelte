@@ -42,6 +42,17 @@
      }));
  }
 
+ 
+ function handleDelete (event){
+     sendMessage (JSON.stringify ({
+         app: "retro",
+         nick: $nick,
+         session: session,
+         delete: {
+             uuid:event.detail.uuid
+         }
+     }));
+ }
 
  function handleReaction (event){
      sendMessage (JSON.stringify ({
@@ -89,10 +100,10 @@ function handleUserMouseEnter (msg) {
 {#if $nick.length > 2} 
     <Users on:mouseenter={handleUserMouseEnter} on:mouseleave={handleUserMouseLeave} on:click={handleUserClick}></Users>
     <div class='board'>
-        <Column bind:this={wwwCol} category="www" placeholder="What went well?" color="#2ECC71" bg_color="#D5F5E3" on:message={handleMessage} on:reaction={handleReaction}></Column>
-        <Column bind:this={wthCol} category="wth" placeholder="What the hell?"  color="#922B21" bg_color="#F2D7D5" on:message={handleMessage} on:reaction={handleReaction}></Column>
-        <Column bind:this={wwsCol} category="wws" placeholder="What we shall?"  color="#1F618D" bg_color="#D4E6F1" on:message={handleMessage} on:reaction={handleReaction}></Column>
-        <Column bind:this={wtfCol} category="wtf" placeholder="WTF?"            color="#CA6F1E" bg_color="#FAE5D3" on:message={handleMessage} on:reaction={handleReaction}></Column>
+        <Column bind:this={wwwCol} category="www" placeholder="What went well?" color="#2ECC71" bg_color="#D5F5E3" on:message={handleMessage} on:reaction={handleReaction} on:delete={handleDelete}></Column>
+        <Column bind:this={wthCol} category="wth" placeholder="What the hell?"  color="#922B21" bg_color="#F2D7D5" on:message={handleMessage} on:reaction={handleReaction} on:delete={handleDelete}></Column>
+        <Column bind:this={wwsCol} category="wws" placeholder="What we shall?"  color="#1F618D" bg_color="#D4E6F1" on:message={handleMessage} on:reaction={handleReaction} on:delete={handleDelete}></Column>
+        <Column bind:this={wtfCol} category="wtf" placeholder="WTF?"            color="#CA6F1E" bg_color="#FAE5D3" on:message={handleMessage} on:reaction={handleReaction} on:delete={handleDelete}></Column>
     </div>
     <a class="export_link" href="{exportUrl}" target="_blank">export</a>
     

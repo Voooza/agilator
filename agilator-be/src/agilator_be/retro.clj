@@ -31,6 +31,12 @@
   (if-let [reaction (get msg "react")] 
     (swap! sessions update-in [session-key :remarks (get reaction "uuid") :reactions] assoc (get reaction "nick") (dissoc reaction "uuid"))))
 
+(defn handle-delete
+  [msg session-key]
+  (pp/pprint msg)
+  (if-let [uuid (get-in msg ["delete" "uuid"])]
+    (swap! sessions update-in [session-key :remarks] dissoc uuid)))
+
 (defn handle-message
   [ch msg]
   (let [nick (get msg "nick")
@@ -44,9 +50,12 @@
     (if (get msg "remark")
       (swap! sessions update-in [session-key :remarks] assoc (uuid) (assoc (get msg "remark") :reactions {})))
     (handle-reactions msg session-key)
+    (handle-delete msg session-key)
     (doall
      (for [chan (keys (:users (get @sessions session-key)))]
        (send-updates chan session-key)))))
+
+
 
 (defn handle-close
   [ch code reason]
