@@ -1,17 +1,17 @@
 (ns agilator-be.handler
-  (:require  [immutant.web             :as web]
-             [immutant.web.async       :as async]
-             [immutant.web.middleware  :as web-middleware]
-             [compojure.route          :as route]
-             [compojure.core           :refer (ANY GET defroutes)]
-             [ring.util.response       :refer (response redirect)]
-             [ring.middleware.params   :refer (wrap-params)]
-             [clojure.data.json        :as json]
-             [clojure.string           :as s]
-             [clojure.pprint           :as pp]
-             [agilator-be.retro        :as retro]
-             [clojure.java.io          :as io]
-             [overtone.at-at           :as at])
+  (:require
+   [agilator-be.retro        :as retro]
+   [clojure.data.json        :as json]
+   [clojure.pprint           :as pp]
+   [clojure.string           :as s]
+   [compojure.core           :refer (GET defroutes)]
+   [compojure.route          :as route]
+   [immutant.web             :as web]
+   [immutant.web.async       :as async]
+   [immutant.web.middleware  :as web-middleware]
+   [overtone.at-at           :as at]
+   [ring.middleware.params   :refer (wrap-params)]
+   [ring.util.response       :refer (redirect)])
   (:gen-class))
 
 (defonce channels (atom {}))

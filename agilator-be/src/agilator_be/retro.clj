@@ -1,12 +1,13 @@
 (ns agilator-be.retro
-  (:require  [immutant.web.async       :as async]
-             [clojure.data.json        :as json]
-             [clojure.string           :as s]
-             [clojure.pprint           :as pp]
-             [agilator-be.utils        :refer (uuid keywordize)]
-             [clojure.set :as set])
-  (:use [hiccup.core]
-        [clj-htmltopdf.core]))
+  (:require
+   [agilator-be.utils        :refer (uuid keywordize)]
+   [clojure.data.json        :as json]
+   [clojure.pprint           :as pp]
+   [clojure.set              :as set]
+   [immutant.web.async       :as async]
+   [hiccup.core              :as hc]
+   [clj-htmltopdf.core       :as pdf]
+   [ring.util.io             :as rui]))
 
 (defonce sessions (atom {}))
 (defonce channels (atom {}))
@@ -16,6 +17,8 @@
   (pp/pprint @sessions)
   (pp/pprint @channels)
 
+
+  
   (reset! sessions {})
   (reset! channels {})
 
@@ -45,9 +48,9 @@
                   (get @sessions session-key)
                   (swap! sessions assoc session-key {:users {} :remarks {}}))]
     (swap! sessions update-in [session-key :users] assoc ch nick)
-    (if (not (get @channels ch))
+    (cond (not (get @channels ch))
       (swap! channels assoc ch session-key))
-    (if (get msg "remark")
+    (cond (get msg "remark")
       (swap! sessions update-in [session-key :remarks] assoc (uuid) (assoc (get msg "remark") :reactions {})))
     (handle-reactions msg session-key)
     (handle-delete msg session-key)
@@ -81,12 +84,12 @@
     (do (pp/pprint (->> r :reactions vals (map keywordize) (map :kind)))
         [:p (str (:owner r) ": " (:content r)) [:br]
          (for [[reaction count] (->> r :reactions vals (map keywordize) (map :kind) frequencies)]
-           [:i  {:style "margin: 0.5em"} (str (if (> count 1) (str count " x ")) reaction)])])))
+           [:i  {:style "margin: 0.5em"} (str (cond (> count 1) (str count " x ")) reaction)])])))
 
 (defn export-html
   [session-key users remarks]
   (let [kwremarks (map keywordize (vals remarks))]
-    (html
+    (hc/html
      [:div
       [:h1 "You had a great retrospective!"]
       [:h2 "Hope you enjoyed it as much as I did...."]
@@ -113,8 +116,8 @@
           remarks (:remarks  session)]
       {:status 200
        :headers {"Content-Type" "application/pdf"}
-       :body (ring.util.io/piped-input-stream
-              (fn [out] (->pdf (export-html session-key users remarks) out)))})
+       :body (rui/piped-input-stream
+              (fn [out] (pdf/->pdf (export-html session-key users remarks) out)))})
     (str "error")
     )
   )
