@@ -3,7 +3,8 @@
              [clojure.data.json        :as json]
              [clojure.string           :as s]
              [clojure.pprint           :as pp]
-             [agilator-be.utils        :refer (uuid keywordize)])
+             [agilator-be.utils        :refer (uuid keywordize)]
+             [clojure.set :as set])
   (:use [hiccup.core]
         [clj-htmltopdf.core]))
 
@@ -14,7 +15,7 @@
   
   (pp/pprint @sessions)
   (pp/pprint @channels)
-  
+
   (reset! sessions {})
   (reset! channels {})
 
@@ -33,7 +34,6 @@
 
 (defn handle-delete
   [msg session-key]
-  (pp/pprint msg)
   (if-let [uuid (get-in msg ["delete" "uuid"])]
     (swap! sessions update-in [session-key :remarks] dissoc uuid)))
 
@@ -55,23 +55,33 @@
      (for [chan (keys (:users (get @sessions session-key)))]
        (send-updates chan session-key)))))
 
-
-
 (defn handle-close
   [ch code reason]
   (let [session (get @channels ch)]
     (swap! channels dissoc ch)
-    (swap! sessions update-in [session :users] dissoc ch)
-    (if (= 0 (count (get-in @sessions [session :users])))
-      (swap! sessions dissoc session))))
+    (swap! sessions update-in [session :users] dissoc ch)))
+
+(defn cleanup-inactive-sessions
+  []
+  (println "cleaning up inactive sessions")
+  (pp/pprint @sessions)
+  (pp/pprint @channels)
+  (let [all-session-keys (set (keys @sessions))
+        active-session-keys (set (vals @channels))
+        sessions-to-clean (set/difference all-session-keys active-session-keys)]
+    (swap! sessions (fn [s] (apply dissoc s sessions-to-clean)))))
+
+(comment
+  
+  )
 
 (defn export-remarks
   [remarks category]
   (for [r (filter (fn [r] (= category (:cat r))) remarks)]
     (do (pp/pprint (->> r :reactions vals (map keywordize) (map :kind)))
-       [:p (str (:owner r) ": " (:content r)) [:br]
-        (for [[reaction count] (->> r :reactions vals (map keywordize) (map :kind) frequencies)]
-          [:i  {:style "margin: 0.5em"} (str (if (> count 1) (str count " x ")) reaction)])])))
+        [:p (str (:owner r) ": " (:content r)) [:br]
+         (for [[reaction count] (->> r :reactions vals (map keywordize) (map :kind) frequencies)]
+           [:i  {:style "margin: 0.5em"} (str (if (> count 1) (str count " x ")) reaction)])])))
 
 (defn export-html
   [session-key users remarks]

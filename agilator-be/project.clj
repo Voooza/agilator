@@ -8,9 +8,11 @@
                  [ring/ring-core "1.9.6"]
                  [org.clojure/data.json "0.2.7"]
                  [ring/ring-devel "1.9.6"]
-                 [clj-htmltopdf "0.2.1"]]
+                 [clj-htmltopdf "0.2.1"]
+                 [overtone/at-at "1.2.0"]]
   :plugins [[lein-ring "0.12.5"]]
   :main agilator-be.handler
+  :aot [agilator-be.handler]
   :uberjar-name "agilator.jar"
   :ring {:handler agilator-be.handler/app}
   :profiles

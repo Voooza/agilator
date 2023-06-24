@@ -10,15 +10,18 @@
              [clojure.string           :as s]
              [clojure.pprint           :as pp]
              [agilator-be.retro        :as retro]
-             [clojure.java.io :as io])
+             [clojure.java.io          :as io]
+             [overtone.at-at           :as at])
   (:gen-class))
 
 (defonce channels (atom {}))
+(def thread-pool (at/mk-pool))
 
 (comment
 
   (pp/pprint @channels)
-
+  
+  
   (reset! channels {})
   )
 
@@ -77,6 +80,9 @@
            :request-method :get})
   (routes {:uri "/retro/export"
            :request-method :get})
+  (routes {:uri "/.git/config"
+           :request-method :get})
+  
   
   )
 
@@ -87,12 +93,16 @@
       (if (number? n) n default))))
 
 (defn -main [& args]
-  (let [port (string->number (first args) 8080)]
+  
+  (let [port (string->number (first args) 8080)
+        stopper (at/every (* 1000 60 60) #(retro/cleanup-inactive-sessions) thread-pool)]
     (web/run
       (-> routes
           (web-middleware/wrap-session {:timeout 20})
           (web-middleware/wrap-websocket websocket-callbacks))
-      {"host" "127.0.0.1", "port" port})))
+      {"host" "127.0.0.1", "port" port})
+    (at/stop stopper)
+    ))
 
 
 (comment
@@ -100,8 +110,6 @@
 
   (-main "9090")
 
-
-  
   (do
     (web/stop)
     (-main)
